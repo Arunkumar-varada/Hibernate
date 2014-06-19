@@ -1,0 +1,178 @@
+1. What is benefit of using ORM tools?
+The main advantage of ORM like hibernate is that it shields developers from messy SQL. Apart from this, ORM provides following benefits: 
+Improved productivity
+High-level object-oriented API
+Less Java code to write
+No SQL to write
+Improved performance 
+Sophisticated caching 
+Lazy loading  / Eager loading
+Improved maintainability 
+A lot less code to write 
+Improved portability 
+ORM framework generates database-specific SQL for you.
+
+2. What are the most common methods of Hibernate configuration?
+The most common methods of Hibernate configuration are:
+ Programmatic configuration
+ XML configuration (hibernate.cfg.xml)
+3. What are the Core interfaces are of Hibernate framework?
+The five core interfaces are used in just about every Hibernate application. Using these interfaces, you can store and retrieve persistent objects and control transactions.
+Session interface
+SessionFactory interface
+Configuration interface  
+Transaction interface
+Query and Criteria interface
+
+4. What role does the Session interface play in Hibernate?
+The Session interface is the primary interface used by Hibernate applications. It is a single-threaded, short-lived object representing a conversation between the application and the persistent store. Session is not thread safe so we should not share same session between multiple threads. It allows you to create query objects to retrieve persistent objects.
+ Session session = sessionFactory.openSession();
+ Session interface role:
+      Wraps a JDBC connection
+      Factory for Transaction
+      Holds a mandatory (first-level) cache of persistent objects, used when navigating the object graph or looking up objects by identifier
+
+5. What role does the SessionFactory interface play in Hibernate?
+Application obtains Session instances from a SessionFactory. There is typically a single SessionFactory for the whole application created during application initialization. The SessionFactory caches generate SQL statements and other mapping metadata that Hibernate uses at runtime. It also holds cached data that has been read in one unit of work and may be reused in a future unit of work
+   SessionFactory sessionFactory = configuration.buildSessionFactory();
+
+6. What is the general flow of Hibernate communication with RDBMS?
+The general flow of Hibernate communication with RDBMS is :
+ Load the Hibernate configuration file and create configuration object. It will automatically load all hbm mapping files 
+ Create session factory from configuration object
+ Get one session from this session factory
+ Create HQL Query
+Execute query to get list containing Java objects
+
+7. What is Hibernate Query Language (HQL)?
+Hibernate offers a query language that embodies a very powerful and flexible mechanism to query, store, update, and retrieve objects from a database. This language, the Hibernate query Language (HQL), is an object-oriented extension to SQL.
+
+8. What’s the difference between load() and get()?
+load() vs. get() :-
+  load()                                                                                                                                                       
+Only use the load() method if you are sure that the object exists.          
+load() method will throw an exception if the unique id is not found in the database.
+load() just returns a proxy by default and database won’t be hit until the proxy is first invoked.    
+  get()
+If you are not sure that the object exists, then use one of the get() methods.
+get() method will return null if the unique id is not found in the database.
+get() will hit the database immediately.
+
+9. What is the difference between and merge() and update() ?
+update(): if you are sure that the session does not contain an already persistent instance with the same identifier.
+ merge(): if you want to merge your modifications at any time without consideration of the state of the session.
+
+10. How do you define sequence generated primary key in hibernate?
+Using tag. Example:-
+<id name="id" type="java.lang.Integer">
+    <column name="ID_PRODUCT" />
+    <generator class="sequence-identity" >
+        <param name="sequence">PRODUCT_ID_SEQ</param>
+    </generator>
+</id>
+Using Annotations:
+@SequenceGenerator(name="EL_SEQ", sequenceName="EL_SEQ",allocationSize=1)
+11. Define cascade and inverse option in one-many mapping?
+cascade - enable operations to cascade to child entities.
+     cascade="all|none|save-update|delete|all-delete-orphan"
+inverse - mark this collection as the "inverse" end of a bidirectional association.
+     inverse="true|false"
+Essentially "inverse" indicates which end of a relationship should be ignored, so when persisting a parent who has a collection of children, should you ask the parent for its list of children, or ask the children who the parents are?
+
+12. What do you mean by Named – SQL query?
+Named SQL queries are defined in the mapping xml document and called wherever required.
+Example:
+@NamedQueries({
+ @NamedQuery(
+ name = "findEmployeeById",
+ query = "from Employee s where s.Id= :Id"
+ )
+})
+@Entity
+@Table(name = "Employee")
+public class Employee implements java.io.Serializable {
+Query query = session.getNamedQuery("findEmployeeById")
+.setString("Id", "7277");
+13. How do you invoke Stored Procedures?
+{ ? = call selectAllEmployees() }
+
+14. Explain Criteria API ?
+Criteria is a simplified API for retrieving entities by composing Criterion objects. This is a very convenient approach for functionality like "search" screens where there is a variable number of conditions to be placed upon the result set.
+Example :
+List employees = session.createCriteria(Employee.class)
+.add(Restrictions.like("name", "a%") )
+.add(Restrictions.like("address", "Boston"))
+.addOrder(Order.asc("name") )
+.list();
+
+15. What are the benefits does HibernateTemplate provide?
+org.springframework.orm.hibernate.HibernateTemplate is a helper class which provides different methods for querying/retrieving data from the database. It also converts checked HibernateExceptions into unchecked DataAccessExceptions.
+The benefits of HibernateTemplate are :
+ HibernateTemplate, a Spring Template class simplifies interactions with Hibernate Session.
+ Common functions are simplified to single method calls.
+ Sessions are automatically closed.
+ Exceptions are automatically caught and converted to runtime exceptions.
+
+16. If you want to see the Hibernate generated SQL statements on console, what should we do?
+In Hibernate configuration file set as follows:
+  set show_sql property to true in configuration file.
+
+17. What is the difference between sorted and ordered collection in hibernate?
+sorted collection vs. order collection :-
+Sorted collection              
+A sorted collection is sorting a collection by utilizing the sorting features provided by the Java collections framework. The sorting occurs in   the memory of JVM which running Hibernate, after the data being read from database using java comparator. 
+ If your collection is not large, it will be more efficient way to sort it. 
+As it happens in jvm memory, it can throw Out of Memory error.         
+Order collection
+Order collection is sorting a collection by specifying the order-by clause in query for sorting this collection when retrieval.
+If your collection is very large, it will be more efficient way to sort it.
+
+18. What are the Collection types in Hibernate ? 
+ Bag
+ Set 
+ List 
+ Array 
+ Map
+
+19. What is Hibernate proxy?
+The proxy attribute enables lazy initialization of persistent instances of the class. Hibernate will initially return CGLIB proxies which implement the named interface. The actual persistent object will be loaded when a method of the proxy is invoked.
+
+20. How can Hibernate be configured to access an instance variable directly and not through a setter method ?
+By mapping the property with access="field" in Hibernate metadata. This forces hibernate to bypass the setter method and access the instance variable directly while initializing a newly loaded object.
+
+21. How can a whole class be mapped as immutable?
+Mark the class as mutable="false" (Default is true),. This specifies that instances of the class are (not) mutable. Immutable classes, may not be updated or deleted by the application.
+
+22. What are the types of Hibernate instance states ?
+Three types of instance states: 
+Transient -The instance is not associated with any persistence context.
+Persistent -The instance is associated with a persistence context. You can update object in database by using session.flush() method.
+Detached -The instance was associated with a persistence context which has been closed – currently not associated. You can reattach detached object to any other session by calling either update() or saveOrUpdate() method on that session.
+23. What is automatic dirty checking?
+Automatic dirty checking is a feature that saves us the effort of explicitly asking Hibernate to update the database when we modify the state of an object inside a transaction.
+
+24. Sample of Hibernate transaction management?
+A org.hibernate.Session is designed to represent a single unit of work (a single atmoic piece of work to be performed.
+Sample code of handling transaction from hibernate session.
+Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+        session.beginTransaction();
+        Event theEvent = new Event();
+        theEvent.setTitle(title);
+        theEvent.setDate(theDate);
+        session.save(theEvent);
+        session.getTransaction().commit();
+
+25. How to implement Optimistic locking in Database?
+You can implement optimistic locks in your DB table in this way (This is how optimistic locking is done in Hibernate):
+- Add integer "version" column to your table.
+- Increase value of this column with each update of corresponding row.
+- To obtain lock, just read "version" value of row.
+- Add "version = obtained_version" condition to where clause of your update statement.
+- Verify number of affected rows after update. If no rows were affected - someone has already modified your entry.
+Your update should look like
+   UPDATE mytable SET name = 'Andy', version = 3 WHERE id = 1 and version = 2;
+
+
+26. What is Second level Cache and QueryCache in Hibernate?
+Second level Cache is maintained at SessionFactory level and It improves performance by saving few database round trip. Another worth noting point is that second level cache is available to whole application rather than any particular session.
+     QueryCache actually stores result of sql query for future calls. Query cache can be used along with second level cache for improved performance. Hibernate support various open source caching solution to implement Query cache e.g. EhCache.
